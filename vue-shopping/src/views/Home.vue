@@ -38,61 +38,62 @@
 </template>
 
 <script>
-
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    components: {
+  components: {},
+
+  data() {
+    return {
+      products: {}
+    };
+  },
+
+  methods: {
+    getProducts() {
+      axios
+        .get("http://127.0.0.1:8000/api/products")
+        .then(response => {
+          this.products = response.data.products;
+
+          console.log(this.products);
+        })
+        .catch(error => {
+          console.log(error.response);
+        })
+        .finally(() => console.log("success"));
     },
 
+    addToCart(product) {
+      product.count = 1;
+      let products = [];
 
-    data() {
-      return {
-        products:{},
+      if (!this.$cookies.isKey("cart")) {
+        products.push(product);
+      } else {
+        products = JSON.parse(this.$cookies.get("cart"));
+
+        for (let i = 0; i < products.length; i++) {
+          if (products[i].id === product.id) {
+            products[i].count += 1;
+            product.count = 0;
+          }
+        }
+
+        if(product.count == 1){
+          products.push(product);
+        }
+
       }
-    },
 
-    methods: {
+      this.$cookies.set("cart", JSON.stringify(products), 60 * 60 * 12);
 
-      getProducts(){
-        axios
-          .get("http://127.0.0.1:8000/api/products")
-          .then(response => {
-            
-            this.products = response.data.products
-         
-            console.log(this.products)
-            
-          })
-          .catch(error => {
-             console.log(error.response)
-          })
-          .finally(() => console.log("success"));
-      },
-      
-      addToCart(product){
-
-        product.count = 1
-
-    if(! this.$cookies.isKey("cart")){
-      this.$cookies.set("cart",product,60 * 60 * 12)
+      console.log(JSON.parse(this.$cookies.get("cart")));
     }
-    else{
+  },
 
-
-    }
-
-
-      console.log(this.$cookies.get("cart").title)
-      }
-
-
-
-      
-    },
-
-    mounted() {
-      this.getProducts()
-    },
+  mounted() {
+    this.getProducts();
   }
+};
 </script>
