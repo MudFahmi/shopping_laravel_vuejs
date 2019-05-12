@@ -27,7 +27,7 @@
            
            <span class="grey--text"> {{product.price }} $ </span><br>
            <v-spacer></v-spacer>
-           <v-btn flat > <v-icon> fas fa-cart-plus </v-icon> </v-btn>
+           <v-btn flat v-on:click="addToCart(product)" > <v-icon> fas fa-cart-plus </v-icon> </v-btn>
         
         </v-card-actions>
       </v-card>
@@ -68,7 +68,26 @@ export default {
              console.log(error.response)
           })
           .finally(() => console.log("success"));
+      },
+      
+      addToCart(product){
+
+        product.count = 1
+
+    if(! this.$cookies.isKey("cart")){
+      this.$cookies.set("cart",product,60 * 60 * 12)
+    }
+    else{
+
+
+    }
+
+
+      console.log(this.$cookies.get("cart").title)
       }
+
+
+
       
     },
 
